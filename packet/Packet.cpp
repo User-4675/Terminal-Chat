@@ -28,8 +28,16 @@ void Packet::seeHeader() const {
 /* Display Payload */
 void Packet::seePayload() const{std::cout << payload << std::endl;}
 
+/* Return message type */
+MessageType Packet::getType() const{return this->type;}
+
+
 /* Return payload size */
 uint32_t Packet::getPayloadSize() const {return this->data_length;}
+
+/* Copy payload into buffer */
+void Packet::copyPayload(std::string &ref) const {ref = this->payload;} 
+
 
 // Serializes packet to buffer
 std::vector<char> Packet::serialize() const {

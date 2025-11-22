@@ -8,7 +8,7 @@
 
 enum class MessageType : uint8_t{
     
-    /* Server side message to identify the clinet */
+    /* Server side message to assign id to new client */
     IDENTIFICATION = 0,
 
     /* Client-to-client Text Message*/
@@ -50,6 +50,9 @@ public:
     void seePayload() const;
 
     uint32_t getPayloadSize() const;
+    MessageType getType() const;
+    void copyPayload(std::string &ref) const; 
+
 
     /* Serializes packet into buffer */
     std::vector<char> serialize() const; // Const -> Does not modify the class

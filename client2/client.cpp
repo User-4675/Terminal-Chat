@@ -1,28 +1,40 @@
-#include "Packet.h"
+#include "../packet/Packet.h"
 
-#include <iostream>
+#include <nlohmann/json.hpp>
 #include <arpa/inet.h>
+#include <iostream>
 #include <unistd.h>
 #include <cstring>
+#include <fstream>
 #include <string>
 #include <thread>
 #include <vector>
+
 using namespace std;
+using json = nlohmann::json;
 
 bool RUNNING = true;
 const int port = 5555;
+const int ID_LEN = 6;
+static string id;
+static string PATH_TO_ID = "../client2/client.json";
 
-void setup(int *client_fd);
+void fetchClientInfo(int server_fd, string &id);
 void receive_message(int sock_fd);
+void setup(int *client_fd, string &id);
+void sendGreetings(int *sock_fd, string &id);
+
+
 ssize_t recv_all(int sock, void* buffer, size_t length);
 
 int main(){
 
     int client_fd;
-    string client_input;
+    string client_input, id;
     vector<char> buffer;
 
-    setup(&client_fd);
+    setup(&client_fd, id);
+    cout << "Wellcome Back " << id << endl;
 
     // Spawn thread that listens to server
     thread receiver(receive_message, client_fd);
@@ -94,7 +106,9 @@ ssize_t recv_all(int sock, void* buffer, size_t length){
 }
 
 /* Connects client to server address */
-void setup(int *client_fd){
+void setup(int *client_fd, string &id){
+    
+    // Conect Client
     struct sockaddr_in server_address;
 
     (*client_fd) = socket(AF_INET, SOCK_STREAM, 0);
@@ -109,4 +123,34 @@ void setup(int *client_fd){
     
     // This is where we connect client to server 
     connect((*client_fd), (const sockaddr *)&server_address, sizeof(server_address));
+    fetchClientInfo(*client_fd, id);
+    sendGreetings(client_fd, id);
+}
+
+/* Reads client.json and fetches saved credentials */
+void fetchClientInfo(int server_fd, string &id){
+
+    ifstream file(PATH_TO_ID);
+    if (!file.is_open()){
+        perror("Failed to open .json file.");
+        exit(EXIT_FAILURE);
+    }
+
+    json data;
+    file >> data;
+
+    // If ID was never generated before...
+    if (data["id"] == "None") {
+        cout << "Requesting ID..." << endl;
+        // Request ID From Server
+        return;
+    }
+
+    id = data["id"];
+}
+
+void sendGreetings(int *sock_fd, string &id){
+    Packet p(MessageType::GREETINGS, 11111, id);
+    vector<char> buffer = p.serialize();
+    send(*sock_fd, buffer.data(), buffer.size(), 0);
 }
