@@ -32,12 +32,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/encrypted_chat.git
-    cd encrypted_chat
+    git clone https://github.com/User-4675/Terminal-Chat.git
+    cd Terminal-Chat/bins
     ```
 2.  Build the client and server executables:
     ```bash
-    ./bins/build.sh
+    ./build.sh
     ```
     This script should compile the source files and place the executables (`client.out` and `server.out`) in the `bins/` directory.
 
@@ -46,12 +46,12 @@ These instructions will get you a copy of the project up and running on your loc
 1.  **Start the Server**:
     In one terminal, navigate to the project root and run:
     ```bash
-    ./bins/server.out
+    ./server.out
     ```
 2.  **Start the Client**:
     In another terminal, navigate to the project root and run:
     ```bash
-    ./bins/client.out
+    ./client.out <client-id>
     ```
     You can open multiple client instances to simulate a chat.
 
